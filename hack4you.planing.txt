@@ -1,0 +1,210 @@
+// Consultas feitas via GET
+// Registros feitos via POST
+-> lang_text('lang', code)
+
+-> User actions {
+	todas açoes requerem checagem de token menos o registro de usuario e login
+	Registro de usuario{
+		api/usuario/registrar
+		insere no 4h_users{
+			username
+			password - sha512(salt+password)
+			salt - sha256(time+user)
+			email
+			register_date
+			token = sha256()
+			actions++
+		}
+		insere no 4h_machines{
+			id_user
+			ip gerar e checar se não existe nenhum igual
+		}
+		envia email com verificação-web
+	}
+	Login {
+		api/usuario/logar
+		select 4h_users{
+			checa email/username
+			checa senha
+			retorna o token
+		}
+	}
+	Verificar email {
+		api/usuario/email/verificar
+		select 4h_users{
+			checa email
+			checa se não foi ativado ainda
+			retorna token/link por email
+		}
+	}
+	Recuperar senha {
+		api/usuario/senha/recuperar
+		select 4h_users{
+			checa email
+			checa senha
+			retorna o token
+		}
+	}
+	Alterar senha {
+		api/usuario/senha/recuperar
+		select 4h_users{
+			checa email
+			checa senha
+			retorna o token
+		}
+	}
+	Ver balanço {
+		api/usuario/balanco
+		select no 4h_users_bitcoin {
+			usa adress
+			retorna bitcoins
+		}
+	}
+}
+
+tempo por dinheiro roubado/ por user
+limite de roubos por minuto
+limite de grana por hora
+
+-> Bitcoin actions{
+	todas ações incluem checagem de token
+	Criar nova carteira{
+		api/bitcoin/registrar
+		insere no 4h_users_bitcoin {
+			adress = md5()
+			password = 1/3 do md5 gerado pelo address e a hora
+			id_user
+		}
+	}
+	Ver balanço {
+		api/bitcoin/balanco
+		select no 4h_users_bitcoin {
+			usa adress
+			retorna bitcoins
+		}
+	}
+	Ver valor de compra{
+		api/bitcoin/comprar/preco
+		retorna valor de compra pela api
+	}
+	Comprar bitcoin{
+		api/bitcoin/comprar
+		select no 4h_users{
+			checa o money
+		}
+		select no 4h_users_bitcoin{
+			checa se existe endereço
+		}
+		update no 4h_users{
+			remove o valor informado
+		}
+		update no 4h_users_bitcoin{
+			adiciona a conversão do valor
+		}
+	}
+	Ver valor de venda{
+		api/bitcoin/vender/preco
+		retorna valor de venda pela api
+	}
+	Comprar bitcoin{
+		api/bitcoin/vender
+		select no 4h_users_bitcoin{
+			checa se existe endereço
+			checa o balanço
+		}
+		update no 4h_users_bitcoin{
+			remove o valor informado
+		}
+		update no 4h_users{
+			adiciona a conversão do valor
+		}
+	}
+}
+-> Upgrade Tasks{ // inicialmente sera feito por um array com setinterval
+	usar var microtime = require('microtime')
+	tem que ser possivel consultar o tempo da task
+	task obj
+	UpgradeTask {
+		expiração = microtime.now()+(tempoemseg/1000/1000);
+		machine_id = id da maquina
+		tarefa = incrementaMemoria
+		tempoRestanteEmSegundos = funcao(){
+			if((expiração-microtime.now()) <= 0){
+				tarefa();
+				return '{"result":lang_text('user_lang', 123123)}'
+			}
+		};
+	}
+}
+
+-> Upgrade {
+	Incrementa memory todas ações incluem checagem de token e maquina e update de score{
+		maximo 64 tarefas
+		maximo 32gb de ram
+		upgrade memory no 4h_users_maquinas{
+			incrementa multiplicado por 2 o valor anterior
+		}
+	}
+}
+
+
+Sistema de expiração (Tempo/Requests) {
+	a cada x requests expira o token e precisa logar ou fazer o capcha para ter outro token
+	a cada x minutos inativo expira o token e precisa logar ou fazer o capcha pra ter outro token
+}
+
+
+IP tiers
+(
+	only < tier
+)
+{
+	tier 6 {
+		only > tier
+		low power
+		money {
+			10 to 200
+		}
+	}
+	tier 5 {
+		medium power
+		money {
+			400 to 1.200
+		}
+	}
+	tier 4 {
+		medium to high power
+		money {
+			5.000 to 15.000
+		}
+	}
+	tier 3 {
+		high power
+		money {
+			30.000 to 50.000
+		}
+	}
+	tier 2 {
+		high to extreme power
+		money {
+			300.000 to 6.000.000
+		}
+	}
+	tier 1 {
+		extreme power
+		money {
+			15.000.000 to 120.000.000
+		}
+	}
+	tier 0 {
+		infinity power
+		money {
+			500.000.000 to 3.000.000.000
+		}
+	}
+}
+
+
+SMTP client {
+	Implementar outros tipos de servicos sem ser gmail**
+}

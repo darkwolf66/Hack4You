@@ -1,0 +1,26 @@
+{
+    "name": "Hack4You",
+    "version": "1.0.0",
+    "description": "Hack4You is a realtime RESTFULL api with node for create a multiplayer game of hacking simulation based on games like vHack, Hack Ex and Hacker Experience.",
+    "author": "darkwolf_66",
+	"main": "app.js",
+	"keywords": ["game", "multiplayer", "hacker", "nodejs", "javascript"],
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/darkwolf66/Hack4You.git"
+	},
+	"bugs": {
+		"url": "https://github.com/darkwolf66/Hack4You/issues"
+	},
+	"homepage": "https://github.com/darkwolf66/Hack4You/",
+	"dependencies": {
+	    "crypto": "*",
+	    "express": "*",
+	    "mysql": "*",
+	    "body-parser": "*",
+	    "fs": "*",
+	    "readline": "*",
+	    "microtime": "*"
+	}
+}
