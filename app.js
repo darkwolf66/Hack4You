@@ -38,18 +38,25 @@ var server = app.listen(config.port, function () {
     //rl.prompt();
 });
 
+global.loggedUsers = new Map();
+var UserManager = require('./libs/user_manager.js');
+global.userManager = new UserManager();
+
+
+
+//Actions Check
+fs.readdirSync('./tasks/').forEach(file => {
+  var task = require("./tasks/" + file);
+  task.startTask();
+});
+
+
 //Console Commands
-/*
 rl.setPrompt('master > ');
 rl.on('line', function(line) {
-	switch(line){
-		case 'birl':
-			console.log('You said birl!');
-			rl.close();
-			break;
-		default:
-			console.log('Invalid command!');
-			rl.close();
-	}
+	console.log(global.userManager.checkUserLogin(line));
     rl.prompt();
-});*/
+});
+
+
+// Server machine bots
