@@ -4,7 +4,7 @@
 
 -> User actions {
 	todas açoes requerem checagem de token menos o registro de usuario e login
-	Registro de usuario{
+	*Registro de usuario{
 		api/usuario/registrar
 		insere no 4h_users{
 			username
@@ -21,7 +21,7 @@
 		}
 		envia email com verificação-web
 	}
-	Login {
+	*Login {
 		api/usuario/logar
 		select 4h_users{
 			checa email/username
@@ -53,7 +53,7 @@
 			retorna o token
 		}
 	}
-	Ver balanço {
+	*Ver balanço {
 		api/usuario/balanco
 		select no 4h_users_bitcoin {
 			usa adress
@@ -62,9 +62,10 @@
 	}
 }
 
+
 tempo por dinheiro roubado/ por user
 limite de roubos por minuto
-limite de grana por hora
+limite de grana por hora dependendo do tier
 
 -> Bitcoin actions{
 	todas ações incluem checagem de token
@@ -148,7 +149,7 @@ limite de grana por hora
 }
 
 
-Sistema de expiração (Tempo/Requests) {
+*Sistema de expiração (Tempo/Requests) {
 	a cada x requests expira o token e precisa logar ou fazer o capcha para ter outro token
 	a cada x minutos inativo expira o token e precisa logar ou fazer o capcha pra ter outro token
 }
@@ -208,3 +209,22 @@ IP tiers
 SMTP client {
 	Implementar outros tipos de servicos sem ser gmail**
 }
+
+memory
+hdd
+cpu
+internet
+firewall
+scan
+sdk
+antivirus
+proxy-tunel
+spam
+spyware
+bot
+miner
+
+
+query em um ip
+scan precisa ser maior que o firewall
+scan > firewall
