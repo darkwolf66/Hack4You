@@ -16,6 +16,19 @@ var lang = function(){
 		}
 		return false;
 	}
+	this.returnMail = function(lang, code) {
+		for (language of langs){
+			if(language.name == lang){
+				for (mail of language.mails){
+					if(mail.code == code){
+						return mail.body;
+					}
+				}
+				return false;
+			}
+		}
+		return false;
+	}
 }
 
 module.exports = lang;
