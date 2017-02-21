@@ -56,9 +56,9 @@ Now get out of here and go codding
 
 Social
 ----
-   [Hack4You]:(http://hack4you.org/)
-   [Mail]:(mailto://will.moraes.96@gmail.com)
-   [Discord]:(https://discord.gg/PBmHaza)
+   [Hack4You](http://hack4you.org/)
+   [Mail](mailto://will.moraes.96@gmail.com)
+   [Discord](https://discord.gg/PBmHaza)
 
 License
 ----
