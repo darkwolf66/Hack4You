@@ -42,8 +42,6 @@ global.loggedUsers = new Map();
 var UserManager = require('./libs/user_manager.js');
 global.userManager = new UserManager();
 
-
-
 //Actions Check
 fs.readdirSync('./tasks/').forEach(file => {
   var task = require("./tasks/" + file);
@@ -58,5 +56,7 @@ rl.on('line', function(line) {
     rl.prompt();
 });
 
-
 // Server machine bots
+global.machineBots = new Map();
+var machineBotGenerator = require('./libs/machine_bot_generator.js');
+machineBotGenerator.generateBots();

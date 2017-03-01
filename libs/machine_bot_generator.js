@@ -16,22 +16,19 @@ MachineBotGenerator = function(){
 					spam: valueGenerator(tier.software_range.initial, tier.software_range.final),
 					spyware: valueGenerator(tier.software_range.initial, tier.software_range.final)
 				};
-				var generated_id = generate_ip();
-				while(machineBots.has(generated_id)){
-					generated_id = generate_ip();
+				var generated_ip = generate_ip();
+				while(machineBots.has(generated_ip)){
+					generated_ip = generate_ip();
 				}
-				machineBots.set(generated_id, bot);
+				////Debug
+					if(tier.name == 'Tier 6' && i < 30){
+						console.log(generated_ip);
+					}
+				////Debug
+				machineBots.set(generated_ip, bot);
 			}
 		}
 		var new_array = Array.from(machineBots);
-		var fs = require('fs');
-		fs.writeFile("./bots", JSON.stringify(new_array), function(err) {
-		    if(err) {
-		        return console.log(err);
-		    }
-
-		    console.log("The file was saved!");
-		}); 
 		global.machineBots = machineBots;
 	}
 	function valueGenerator(initial, final){
