@@ -46,7 +46,7 @@
 		}
 	}
 	Alterar senha {
-		api/usuario/senha/recuperar
+		api/user/senha/recuperar
 		select 4h_users{
 			checa email
 			checa senha
@@ -54,11 +54,16 @@
 		}
 	}
 	*Ver balanço {
-		api/usuario/balanco
-		select no 4h_users_bitcoin {
-			usa adress
-			retorna bitcoins
+		api/user/balance
+		select no 4h_users {
+			retorna money
 		}
+	Ver maquinas {
+		api/user/machines
+		select no 4h_machines {
+			retorna maquinas
+		}
+	}
 	}
 }
 
@@ -205,8 +210,7 @@ IP tiers
 	}
 }
 
-
-SMTP client {
+**SMTP client {
 	Implementar outros tipos de servicos sem ser gmail**
 }
 
@@ -218,13 +222,36 @@ firewall
 scan
 sdk
 antivirus
-proxy-tunel
+proxy_tunel
 spam
 spyware
 bot
 miner
 
 
+Calculo de score {
+	memory_score: 512mb = 1 score
+	hdd: hdd/100 = score
+	cpu: cpu score
+	internet: internet score
+	firewall: 1 point = 5 score
+	scan: 1 point = 5 score
+	sdk: 1 point = 10 score
+	antivirus: 1 point = 10 score
+	proxy-tunel: 1 point = 3 score
+	spam: 1 point = 5 score
+	spyware: 1 point = 3 score
+}
+Calculo do score do player {
+	Pega score de todas maquinas e soma com reputation/2 arredonda
+}
+
+
+
 query em um ip
 scan precisa ser maior que o firewall
 scan > firewall
+
+
+Pegar todas minhas maquinas
+
