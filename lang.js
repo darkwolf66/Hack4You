@@ -8,7 +8,7 @@ var lang = function(){
 			if(language.name == lang){
 				for (message of language.messages){
 					if(message.code == code){
-						return message.message;
+						return message;
 					}
 				}
 				return false;
