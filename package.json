@@ -23,5 +23,8 @@
 	    "readline": "*",
 	    "microtime": "*",
 	    "nodemailer":"*"
+	},
+	"scripts": {
+	    "test": "mocha"
 	}
 }

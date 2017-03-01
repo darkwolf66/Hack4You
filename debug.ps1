@@ -1,2 +1,2 @@
-#npm test
+npm test
 node app.js

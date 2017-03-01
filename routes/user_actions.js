@@ -14,6 +14,13 @@ var moment = require('moment');
 var MailSender = require('../libs/mail_sender.js');
 var mailSender = new MailSender();
 
+var mysqlQueryList = require('../libs/mysql_query_list.js');
+var getQuery = mysqlQueryList.getQuery;
+
+//Ip Tools
+var IpTools = require('../libs/ip_tools.js');
+var generate_ip = new IpTools(config.bot.ip_ranges).generate_ip;
+
 module.exports = function(app, my){
 	//Primeiro os registros
 	///	Account Register
@@ -25,23 +32,23 @@ module.exports = function(app, my){
             var lang = req.body.lang;
         }
         if(!req.body.recode){
-    		return res.send({"status": "error", "code":4 ,"message": rlang(lang, 4)});
+    		return res.send(rlang(lang, 4));
     	}else if(!req.body.username){
-    		return res.send({"status": "error", "code":1 ,"message": rlang(lang, 1)});
+    		return res.send(rlang(lang, 1));
     	}else if(!req.body.password){
-    		return res.send({"status": "error", "code":3 ,"message": rlang(lang, 3)});
+    		return res.send(rlang(lang, 3));
     	}else if(!req.body.email){
-    		return res.send({"status": "error", "code":5 ,"message": rlang(lang, 5)});
+    		return res.send(rlang(lang, 5));
     	}else if(req.body.reemail != req.body.email){
-            return res.send({"status": "error", "code":6 ,"message": rlang(lang, 6)});
+            return res.send(rlang(lang, 6));
         }
         
         if(!fieldValidator.username.isValid(req.body.username)){
-           return res.send({"status": "error", "code":9 ,"message": rlang(lang, 9)});
+           return res.send(rlang(lang, 9));
         }else if(!fieldValidator.email.isValid(req.body.email)){
-           return res.send({"status": "error", "code":7 ,"message": rlang(lang, 7)});
+           return res.send(rlang(lang, 7));
         }else if(!fieldValidator.password.isValid(req.body.password)){
-           return res.send({"status": "error", "code":8 ,"message": rlang(lang, 8)});
+           return res.send(rlang(lang, 8));
         }
 
         var ip = generate_ip();
@@ -65,12 +72,12 @@ module.exports = function(app, my){
 
         //Add new user to mysql
         my.beginTransaction(function(err) {
-          if (err) { res.send({"status": "error", "code":12 ,"message": rlang(lang, 12)}); }
+          if (err) { res.send(rlang(lang, 12)); }
 
-          my.query('INSERT INTO 4h_users SET ?', user, function(err, result) {
+          my.query(getQuery(2), user, function(err, result) {
             if (err) { 
               my.rollback(function() {
-                return res.send({"status": "error", "code":12 ,"message": rlang(lang, 12)});
+                return res.send(rlang(lang, 12));
               });
             }else{
                 var machine = {
@@ -78,19 +85,19 @@ module.exports = function(app, my){
                     id_user: result.insertId
                 };
                 
-                my.query('INSERT INTO 4h_machines SET ?', machine, function(err, result) {
+                my.query(getQuery(3), machine, function(err, result) {
                   if (err) { 
                     my.rollback(function() {
-                      return res.send({"status": "error", "code":12 ,"message": rlang(lang, 12)});
+                      return res.send(rlang(lang, 12));
                     });
                   }  
                   my.commit(function(err) {
                     if (err) { 
                       my.rollback(function() {
-                        return res.send({"status": "error", "code":12 ,"message": rlang(lang, 12)});
+                        return res.send(rlang(lang, 12));
                       });
                     }
-                    res.send({"status": "success", "code":11 ,"message": rlang(lang, 11)});
+                    res.send(rlang(lang, 11));
                     mailSender.sendMail(user.email, rmlang(lang, 1));
                     my.end();
                   });
@@ -107,11 +114,11 @@ module.exports = function(app, my){
             var lang = req.body.lang;
         }
         if(!req.body.recode){
-            return res.send({"status": "error", "code":4 ,"message": rlang(lang, 4)});
+            return res.send(rlang(lang, 4));
         }else if(!req.body.user){
-            return res.send({"status": "error", "code":1 ,"message": rlang(lang, 1)});
+            return res.send(rlang(lang, 1));
         }else if(!req.body.password){
-            return res.send({"status": "error", "code":3 ,"message": rlang(lang, 3)});
+            return res.send(rlang(lang, 3));
         }
         var user;
         if(fieldValidator.email.isValid(req.body.user)){
@@ -124,7 +131,7 @@ module.exports = function(app, my){
             }
         }
 
-        my.query('SELECT * FROM 4h_users WHERE ?', user, function (error, result, fields) {
+        my.query(getQuery(4), user, function (error, result, fields) {
             if (error || result.lenght <= 0) {
                 return res.send({"status": "error", "code":13 ,"message": rlang(lang, 13)});
             }else{
@@ -156,29 +163,49 @@ module.exports = function(app, my){
             return false;
         }
         if(req.body.token && rsp){
-            my.query('SELECT money FROM 4h_users WHERE id_user=?', global.loggedUsers.get(req.body.token).id_user, function (error, result, fields) {
+            my.query(getQuery(5), global.loggedUsers.get(req.body.token).id_user, function (error, result, fields) {
                 if (error) {
                     console.log(error);
-                    return res.send({"status": "error", "code":15 ,"message": rlang(lang, 15)});
+                    return res.send(rlang(lang, 15));
                 }else{
                     money = result[0].money;
                     return res.send({"status": "success", "balance": money});
                 }
             });
         }else{
-            return res.send({"status": "error", "code":16 ,"message": rlang(lang, 16)});
+            return res.send(rlang(lang, 16));
+        }
+    });
+    app.post('/api/user/machines', function(req, res){
+        if(!req.body.lang){
+            return res.send({"status": "error", "code":1 ,"message": 'Blank Language'});
+        }else{
+            var lang = req.body.lang;
+        }
+        var rsp = global.userManager.checkUserLogin(req.body.token, res, lang);
+        if(rsp == 'exit'){
+            return false;
+        }
+        if(req.body.token && rsp){
+            my.query(getQuery(6), global.loggedUsers.get(req.body.token).id_user, function (error, result, fields) {
+                if (error) {
+                    console.log(error);
+                    return res.send(rlang(lang, 15));
+                }else{
+                    return res.send({"status": "success", "machines": result});
+                }
+            });
+        }else{
+            return res.send(rlang(lang, 16));
         }
     });
 }
-// Gera um ip aleatorio
-function generate_ip(){
-    return (Math.floor(Math.random() * 254) + 1) + "." + (Math.floor(Math.random() * 254) + 1) + "." + (Math.floor(Math.random() * 254) + 1) + "." + (Math.floor(Math.random() * 254) + 1);
-}
+
 // Checa o status de um ip até estar certo
 function check_ip_status(my, ip){
-    my.query('SELECT ip FROM 4h_machines WHERE ?', ip, function (error, result, fields) {
+    my.query(getQuery(7), ip, function (error, result, fields) {
         if (error) {
-            return res.send({"status": "error", "code":10 ,"message": rlang(lang, 10)});
+            return res.send(rlang(lang, 10));
         }else{
             if(result.lenght > 0){
                 ip = generate_ip();

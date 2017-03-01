@@ -1,6 +1,10 @@
 var lang = require('../lang.js');
 var config  =  require('../config.js');
 var microtime = require('microtime');
+//Lista de querys
+var mysqlQueryList = require('../libs/mysql_query_list.js');
+var getQuery = mysqlQueryList.getQuery;
+
 //Presets
 var lang = new lang();
 var rlang = lang.returnMessage;
@@ -23,49 +27,52 @@ module.exports = function(app, my){
         if(req.body.token && rsp){
             //Pega a maquina do player atual pelo ip e pega a maquina destino, compara o power
             if(!req.body.myip || !req.body.atackip){
-                return res.send({"status": "error", "code":21 ,"message": rlang(lang, 21)});
+                return res.send(rlang(lang, 21));
             }
-            my.query('SELECT * FROM 4h_machines WHERE ip=?', req.body.myip, function (error, own_machine, fields) {
+            //Faz join para pegar o balance
+            my.query(getQuery(1), req.body.myip, function (error, own_machine, fields) {
                 if (error) {
                     console.log(error);
-                    return res.send({"status": "error", "code":15 ,"message": rlang(lang, 15)});
+                    return res.send(rlang(lang, 15));
                 }else if(own_machine.lenght <= 0){
-                    return res.send({"status": "error", "code":19 ,"message": rlang(lang, 19)});
+                    return res.send(rlang(lang, 19));
                 }else{
                     //Checa se a maquina atacante é sua
                     own_machine = own_machine[0];
                     if(own_machine.id_user == global.loggedUsers.get(req.body.token).id_user){
-                        //Fazer join para pegar o balance
                         //Checa os bots
                         var atacked = global.machineBots.get(req.body.atackip);
+                        if(req.body.atackip == req.body.myip){
+                            return res.send(rlang(lang, 22));
+                        }
                         if(atacked){
                             if(own_machine.scan > atacked.firewall){
                                 return res.send({"status": "success", "machine": atacked});
                             }else{
-                                return res.send({"status": "error", "code":20 ,"message": rlang(lang, 20)});
+                                return res.send(rlang(lang, 20));
                             }
                         }else{
-                            my.query('SELECT * FROM 4h_machines WHERE ip=?', req.body.atackip, function (error, atacked, fields) {
+                            my.query(getQuery(1), req.body.atackip, function (error, atacked, fields) {
                                 //Checa se os status da sua maquina vs atacado
                                 if(error){//Avisa se a machine com este ip não existe
-                                    return res.send({"status": "error", "code":15 ,"message": rlang(lang, 15)});
-                                }else if(atacked.lenght == undefined || atacked.lenght <= 0){
-                                    return res.send({"status": "error", "code":19 ,"message": rlang(lang, 19)});
+                                    return res.send(rlang(lang, 15));
+                                }else if(atacked.length === undefined || atacked.length <= 0){
+                                    return res.send(rlang(lang, 19));
                                 }else if(own_machine.scan > atacked.firewall){
                                     atacked = atacked[0];
                                     return res.send({"status": "success", "machine": atacked});
                                 }else{
-                                    return res.send({"status": "error", "code":20 ,"message": rlang(lang, 20)});
+                                    return res.send(rlang(lang, 20));
                                 }
                             });
                         }
                     }else{
-                        return res.send({"status": "error", "code":18 ,"message": rlang(lang, 18)});
+                        return res.send(rlang(lang, 18));
                     }
                 }
             });
         }else{
-            return res.send({"status": "error", "code":16 ,"message": rlang(lang, 16)});
+            return res.send(rlang(lang, 16));
         }
     });
 }

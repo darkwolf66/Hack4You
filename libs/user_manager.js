@@ -16,6 +16,9 @@ var UserManager = function() {
 				global.loggedUsers.get(token).actions++;
 				global.loggedUsers.get(token).minute_actions++;
 				return true;
+			}else if(user.minute_actions > config.expiration.minute_actions){
+				global.loggedUsers.delete(token);
+				return false;
 			}else{
 				global.loggedUsers.delete(token);
 				return false;
